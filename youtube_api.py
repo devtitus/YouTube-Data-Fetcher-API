@@ -1,33 +1,38 @@
-from typing import Dict
+# youtube_api.py
 import requests
-from config import API_KEYS, QUOTA_LIMIT
+from queue import Queue
+from config import API_KEYS
 
-# Dictionary to track quota usage
-quota_usage = {key: 0 for key in API_KEYS}
+# Create a thread-safe queue of valid (non-empty) API keys
+_key_queue = Queue()
+for key in API_KEYS:
+    if key:
+        _key_queue.put(key)
 
-# Index to keep track of the current API key
-current_key_index = 0
+def make_youtube_api_request(url, params):
+    api_key = _key_queue.get()  # wait if all keys are in use
+    returned = False
+    try:
+        params_with_key = params.copy()
+        params_with_key["key"] = api_key
 
-def get_next_api_key():
-    global current_key_index
-    current_key_index = (current_key_index + 1) % len(API_KEYS)
-    return API_KEYS[current_key_index]
+        print(f"📡 Requesting: {url} with key: {api_key[:6]}...")
 
-def make_youtube_api_request(url: str, params: Dict):
-    global quota_usage
-
-    while True:
-        current_key = API_KEYS[current_key_index]
-        if quota_usage[current_key] >= QUOTA_LIMIT:
-            get_next_api_key()
-            continue
-
-        params['key'] = current_key
-        response = requests.get(url, params=params)
+        response = requests.get(url, params=params_with_key, timeout=10)
+        print(f"✅ Response {response.status_code}: {response.text[:100]}...")
 
         if response.status_code == 403 and 'quotaExceeded' in response.text:
-            quota_usage[current_key] = QUOTA_LIMIT
-            get_next_api_key()
-        else:
-            quota_usage[current_key] += 1  # Increment quota usage
-            return response.json()
+            _key_queue.put(api_key)
+            returned = True
+            if _key_queue.empty():
+                raise Exception("All API keys quota exhausted.")
+            return make_youtube_api_request(url, params)
+
+        if response.status_code != 200:
+            raise Exception(f"Error {response.status_code}: {response.text}")
+        
+        return response.json()
+
+    finally:
+        if not returned:
+            _key_queue.put(api_key)

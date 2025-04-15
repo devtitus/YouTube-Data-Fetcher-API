@@ -1,4 +1,11 @@
+<<<<<<< HEAD
 dotenv
 fastapi
 uvicorn
 requests
+=======
+fastapi
+uvicorn
+python-dotenv
+requests
+>>>>>>> 42546f3 (Implement YouTube API request handling with quota management and add Docker support)

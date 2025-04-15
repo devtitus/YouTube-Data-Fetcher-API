@@ -1,0 +1,18 @@
+services:
+  youtube-api:
+    build: .
+    container_name: youtube-api-app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    restart: unless-stopped
+    networks:
+      - yt-net
+
+networks:
+  yt-net:
+    name: yt-net        # 👈 this forces the actual network name to be just "yt-net"
+    driver: bridge
