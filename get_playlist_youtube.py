@@ -1,4 +1,3 @@
-
 from youtube_api import make_youtube_api_request
 
 # 1 Quota Cost

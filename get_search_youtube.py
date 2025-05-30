@@ -5,7 +5,7 @@ def get_query_searched_results(q: str, max_results: int = 5):
     url = "https://www.googleapis.com/youtube/v3/search"
     params = {
         "q": q,
-        "part": "snippet",
+        "part": "id,snippet",
         "maxResults": max_results,
         "type": "video"
     }
