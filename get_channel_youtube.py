@@ -5,7 +5,7 @@ def get_yt_channel_id (channel_id: str):
     url = "https://www.googleapis.com/youtube/v3/channels"
     params = {
         "id": channel_id,
-        "part": "snippet, contentDetails, statistics, status",  
+        "part": "id, snippet, statistics, brandingSettings, localizations, contentDetails, status, topicDetails",  
         "type": "channel"
     } 
     return make_youtube_api_request(url, params)

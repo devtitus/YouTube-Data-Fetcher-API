@@ -3,16 +3,51 @@ services:
     build: .
     container_name: youtube-api-app
     ports:
-      - "8000:8000"
+      - "5679:5679"
     env_file:
       - .env
     volumes:
       - .:/app
+      - ./logs:/app/logs
     restart: unless-stopped
     networks:
       - yt-net
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5679/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+
+  redis:
+    image: redis:alpine
+    container_name: youtube-api-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: always
+    networks:
+      - yt-net
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
 
 networks:
   yt-net:
     name: yt-net        # 👈 this forces the actual network name to be just "yt-net"
     driver: bridge
+
+volumes:
+  redis-data:
+    name: youtube-api-redis-data
