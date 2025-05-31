@@ -16,7 +16,7 @@ This is a FastAPI application that provides endpoints to fetch YouTube data incl
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/yt-fetch.git
+git clone https://github.com/devtitus/YouTube-Data-Fetcher-API.git
 cd yt-fetch
 ```
 
