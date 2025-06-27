@@ -5,7 +5,7 @@ import os
 load_dotenv()
 
 # List of API keys (loaded from environment variables)
-API_KEYS = [
+API_KEYS_RAW = [
     # os.getenv("API_KEY_1"),
     # os.getenv("API_KEY_2"),
     # os.getenv("API_KEY_3"),
@@ -20,6 +20,12 @@ API_KEYS = [
     # os.getenv("API_KEY_12"),
     os.getenv("API_KEY_Proj-yt-app")
 ]
+
+# Filter out None/empty API keys and validate they exist
+API_KEYS = [key for key in API_KEYS_RAW if key and key.strip()]
+
+if not API_KEYS:
+    raise ValueError("No valid API keys found. Please set at least one API key in your environment variables.")
 
 # Quota limit per API key
 QUOTA_LIMIT = 10000
