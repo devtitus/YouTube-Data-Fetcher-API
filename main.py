@@ -130,7 +130,28 @@ def get_playlist_videos(playlist_id: str, max_results: int = 5):
         logger.error(f"Error in playlist endpoint: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
     
-# Get Videos IDs from a Channels Playlist Endpoint
+# Get Videos IDs from a Channels Playlist Endpoint (Video IDs Only)
+@app.get("/youtube/playlist/video-ids")
+def get_playlist_video_ids_only(playlist_id: str, max_results: int = 5):
+    try:
+        # Validate input parameters
+        if not playlist_id or not playlist_id.strip():
+            raise HTTPException(status_code=400, detail="playlist_id parameter cannot be empty")
+        
+        if max_results <= 0 or max_results > 50:
+            raise HTTPException(status_code=400, detail="max_results must be between 1 and 50")
+        
+        playlist_id = playlist_id.strip()
+        logger.info(f"Playlist video IDs request for playlist_id: '{playlist_id}' with max_results={max_results}")
+        data = get_yt_channel_videos_playlist_only_video_id(playlist_id, max_results)
+        return data
+    except HTTPException:
+        raise  # Re-raise HTTP exceptions
+    except Exception as e:
+        logger.error(f"Error in playlist video IDs endpoint: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+    
+# Get Videos IDs from a Channels Playlist Endpoint (Legacy endpoint)
 @app.get("/youtube/playlist_only_video_id")
 def get_playlist_youtube_only_video_id(playlist_id: str, max_results: int = 5):
     try:

@@ -1,3 +1,5 @@
+name: youtube-data-fetcher-api
+
 services:
   youtube-api:
     build: .
@@ -45,9 +47,10 @@ services:
 
 networks:
   yt-net:
-    name: yt-net        # 👈 this forces the actual network name to be just "yt-net"
-    driver: bridge
+    name: yt-net
+    external: true
 
 volumes:
   redis-data:
     name: youtube-api-redis-data
+    external: true
