@@ -7,8 +7,10 @@ RUN apt-get update && apt-get install -y curl redis-tools && rm -rf /var/lib/apt
 
 COPY . /app
 
-# Make the wait script executable
-RUN chmod +x /app/wait-for-redis.sh
+# Convert line endings and make the wait script executable
+RUN sed -i 's/\r$//' /app/wait-for-redis.sh && \
+    chmod +x /app/wait-for-redis.sh && \
+    ls -la /app/wait-for-redis.sh
 
 # Create log directory and ensure proper permissions
 RUN mkdir -p /app/logs && \

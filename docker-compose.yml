@@ -48,9 +48,9 @@ services:
 networks:
   yt-net:
     name: yt-net
-    external: true
+    external: false
 
 volumes:
   redis-data:
     name: youtube-api-redis-data
-    external: true
+    external: false
